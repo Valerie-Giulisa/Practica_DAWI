@@ -1,0 +1,23 @@
+package entities;
+
+
+import jakarta.persistence.*;
+import lombok.Data;
+
+@Data
+@Entity
+@Table
+public class Usuario {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String nombre;
+
+    @Column(nullable = false)
+    private String correo;
+
+    @Column(nullable = false)
+    private String clave;
+}
