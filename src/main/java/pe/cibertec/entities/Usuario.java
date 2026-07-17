@@ -1,4 +1,4 @@
-package entities;
+package pe.cibertec.entities;
 
 
 import jakarta.persistence.*;

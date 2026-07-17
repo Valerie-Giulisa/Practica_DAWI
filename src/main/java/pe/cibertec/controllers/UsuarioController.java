@@ -1,13 +1,10 @@
-package controllers;
+package pe.cibertec.controllers;
 
 
-import entities.Usuario;
+import org.springframework.web.bind.annotation.*;
+import pe.cibertec.entities.Usuario;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import repository.UsuarioRepository;
+import pe.cibertec.repository.UsuarioRepository;
 
 import java.util.List;
 
@@ -22,7 +19,8 @@ public class UsuarioController {
     }
 // funcion para registrar un nuevo usuario
     @PostMapping("/registrar")
-    public ResponseEntity registrar(Usuario usuario){
+
+    public ResponseEntity<Usuario> registrar(@RequestBody Usuario usuario){
 
         Usuario usuarioRegistrado = usuarioRepository.save(usuario);
 
