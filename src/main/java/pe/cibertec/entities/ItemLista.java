@@ -1,5 +1,6 @@
 package pe.cibertec.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -15,7 +16,11 @@ public class ItemLista {
     private Long id;
     private String nombreProducto;
     private Integer cantidad;
-    private String estado;
+    private String estado = "PENDIENTE";
+    @ManyToOne
+    @JoinColumn(name = "lista_id")
+    @JsonIgnore
+    private ListaCompra lista;
 
 
 
