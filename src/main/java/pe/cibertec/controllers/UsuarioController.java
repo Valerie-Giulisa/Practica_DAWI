@@ -2,8 +2,10 @@ package pe.cibertec.controllers;
 
 
 import org.springframework.web.bind.annotation.*;
+import pe.cibertec.entities.Producto;
 import pe.cibertec.entities.Usuario;
 import org.springframework.http.ResponseEntity;
+import pe.cibertec.repository.ProductoRepository;
 import pe.cibertec.repository.UsuarioRepository;
 
 import java.util.List;
@@ -12,10 +14,12 @@ import java.util.List;
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
     private final UsuarioRepository usuarioRepository;
+    private final ProductoRepository productoRepository;
 
-//Constructor para inicializar repository
-    public UsuarioController(UsuarioRepository usuarioRepository) {
+    //Constructor para inicializar repository
+    public UsuarioController(UsuarioRepository usuarioRepository, ProductoRepository productoRepository) {
         this.usuarioRepository = usuarioRepository;
+        this.productoRepository = productoRepository;
     }
 // funcion para registrar un nuevo usuario
     @PostMapping("/registrar")
@@ -35,4 +39,6 @@ public class UsuarioController {
     }
 
 
-}
+    }
+
+
