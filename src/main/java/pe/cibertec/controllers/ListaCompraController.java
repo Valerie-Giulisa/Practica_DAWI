@@ -1,5 +1,9 @@
 package pe.cibertec.controllers;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pe.cibertec.entities.ItemLista;
@@ -15,8 +19,8 @@ import java.util.List;
 @RequestMapping("/api/listas")
 
 public class ListaCompraController {
-    private  final UsuarioRepository usuarioRepository;
-    private  final ListaCompraRepository listaCompraRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final ListaCompraRepository listaCompraRepository;
     private final ItemListaRepository itemListaRepository;
 
     public ListaCompraController(UsuarioRepository usuarioRepository, ListaCompraRepository listaCompraRepository, ItemListaRepository itemListaRepository) {
@@ -26,10 +30,10 @@ public class ListaCompraController {
     }
 
     @PostMapping("/{idUsuario}/crear")
-    public ResponseEntity<?> crear(@PathVariable Long idUsuario, @RequestBody ListaCompra listaCompra){
+    public ResponseEntity<?> crear(@PathVariable Long idUsuario, @RequestBody ListaCompra listaCompra) {
         Usuario usuario = usuarioRepository.findById(idUsuario).orElse(null);
-        if(usuario == null){
-            return  ResponseEntity.badRequest().body("Usuario no encontrado");
+        if (usuario == null) {
+            return ResponseEntity.badRequest().body("Usuario no encontrado");
 
         }
         listaCompra.setUsuario(usuario);
@@ -39,10 +43,10 @@ public class ListaCompraController {
     }
 
     @PostMapping("/{idLista}/agregar")
-    public ResponseEntity<?> agregar(@PathVariable Long idLista, @RequestBody ItemLista itemLista){
+    public ResponseEntity<?> agregar(@PathVariable Long idLista, @RequestBody ItemLista itemLista) {
         ListaCompra listaCompra = listaCompraRepository.findById(idLista).orElse(null);
-        if(listaCompra == null){
-            return  ResponseEntity.notFound().build();
+        if (listaCompra == null) {
+            return ResponseEntity.notFound().build();
 
         }
         itemLista.setLista(listaCompra);
@@ -51,8 +55,8 @@ public class ListaCompraController {
     }
 
     @PutMapping("/item/{idItem}/estado")
-    public ResponseEntity<?> cambiarEstado(@PathVariable Long idItem, @RequestParam String estado){
-        return  itemListaRepository.findById(idItem)
+    public ResponseEntity<?> cambiarEstado(@PathVariable Long idItem, @RequestParam String estado) {
+        return itemListaRepository.findById(idItem)
                 .map(item -> {
                     item.setEstado(estado);
                     return ResponseEntity.ok(itemListaRepository.save(item));
@@ -63,7 +67,62 @@ public class ListaCompraController {
     }
 
     @GetMapping("/usuario/{idUsuario}")
-    public List<ListaCompra> historial (@PathVariable Long idUsuario) {
+    public List<ListaCompra> historial(@PathVariable Long idUsuario) {
         return listaCompraRepository.findByUsuarioId(idUsuario);
     }
-}
+
+    @GetMapping("/{idLista}")
+    public ResponseEntity<List<ItemLista>> detalle(@PathVariable Long idLista) {
+        List<ItemLista> items = itemListaRepository.detalleLista(idLista);
+        if (items.isEmpty()) {
+
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(items);
+
+
+    }
+
+
+    @GetMapping("/{idLista}/item")
+    public ResponseEntity<List<ItemLista>> obtenerItemsPorEstado(@PathVariable Long idLista, @RequestParam String estado) {
+        List<ItemLista> items = itemListaRepository.buscarPorEstado(idLista, estado);
+        if (items.isEmpty()) {
+
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(items);
+
+
+    }
+
+    @GetMapping("/usuario/{idUsuario}/paginado")
+    public Page<ListaCompra> historialPaginado(@PathVariable Long idUsuario, @RequestParam int page, @RequestParam int size) {
+
+        {
+
+            Pageable pageable = PageRequest.of(page, size);
+            return listaCompraRepository.findByUsuarioId(idUsuario, pageable);
+        }
+
+    }
+
+        @GetMapping("/usuario/{idUsuario}/paginado/ordenado")
+        public Page<ListaCompra> historialPaginadoOrdenado(
+                @PathVariable Long idUsuario,
+                @RequestParam int page,
+                @RequestParam int size,
+                @RequestParam(defaultValue =  "fechaCreacion") String sortBy,
+                @RequestParam(defaultValue = "desc") String order
+                ) {
+
+            Sort sort = order.equalsIgnoreCase("asc") ?
+                    Sort.by(sortBy).ascending() :
+                    Sort.by(sortBy).descending();
+            Pageable pageable = PageRequest.of(page, size, sort);
+            return listaCompraRepository.findByUsuarioId(idUsuario, pageable);
+
+        }
+
+
+    }

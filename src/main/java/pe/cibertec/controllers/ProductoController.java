@@ -56,4 +56,13 @@ public class ProductoController {
                 })
                 .orElse(ResponseEntity.notFound().build());
 }
+    @GetMapping("/buscarPorNombre")
+    public ResponseEntity<List<Producto>> buscarPorNombreParam(@RequestParam String texto){
+        List<Producto> resultado = productoRepository.buscarPorNombre(texto);
+        if (resultado.isEmpty()){
+            return  ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(resultado);
+    }
+
 }
